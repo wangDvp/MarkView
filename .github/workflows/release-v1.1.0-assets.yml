@@ -1,0 +1,64 @@
+name: Upload v1.1.0 release assets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upload:
+    if: github.repository == 'wangDvp/MarkView'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch the verified release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init release-source
+          git -C release-source remote add origin https://github.com/wangDvp/MarkView.git
+          git -C release-source fetch --depth=1 origin refs/tags/v1.1.0
+          git -C release-source checkout --detach FETCH_HEAD
+          test "$(git -C release-source rev-parse HEAD)" = a47f4455bd9c9b299e622ab333e14e5afc174000
+
+      - name: Package and compare with the local release checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release-source
+          python3 scripts/package-release.py --output ../release-artifacts
+          cd ../release-artifacts
+          sha256sum --check <<'CHECKSUMS'
+          aa1567f6b4ec7ac1e9da55f54d0a9d15b916b5f84af94a6f36dca8c4ba92f7a6  MarkView-v1.1.0.zip
+          040f7d5c4e59cb1794296c5b450b2b49726085358ddf70fa36c12056e15be82d  MarkView-v1.1.0-source.zip
+          CHECKSUMS
+
+      - name: Upload only missing verified assets to the existing draft
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd release-artifacts
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import subprocess
+          repository = 'wangDvp/MarkView'
+          endpoint = f'repos/{repository}/releases/432393883'
+          release = json.loads(subprocess.check_output(['gh', 'api', endpoint]))
+          assert release['draft'] and release['tag_name'] == 'v1.1.0'
+          assert release['target_commitish'] == 'a47f4455bd9c9b299e622ab333e14e5afc174000'
+          existing = {asset['name']: asset for asset in release['assets']}
+          for name in ('MarkView-v1.1.0.zip', 'MarkView-v1.1.0-source.zip', 'SHA256SUMS.txt'):
+              file = Path(name)
+              digest = 'sha256:' + hashlib.sha256(file.read_bytes()).hexdigest()
+              if name in existing:
+                  asset = existing[name]
+                  assert asset['state'] == 'uploaded' and asset['size'] == file.stat().st_size
+                  assert asset['digest'] == digest
+              else:
+                  subprocess.run(['gh', 'release', 'upload', 'v1.1.0', name, '--repo', repository], check=True)
+          PY
