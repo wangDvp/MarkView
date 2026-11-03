@@ -1,0 +1,40 @@
+{
+  "name": "markdown-preview-ctrl-m",
+  "version": "1.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "wangchaocn1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangDvp/MarkView.git"
+  },
+  "homepage": "https://github.com/wangDvp/MarkView#readme",
+  "bugs": {
+    "url": "https://github.com/wangDvp/MarkView/issues"
+  },
+  "type": "module",
+  "description": "Local Markdown preview and editing for Chrome, with Word/PDF export and optional macOS native save.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "icons": "node scripts/icons.mjs",
+    "check": "node tests/check-static.mjs",
+    "test:package": "python3 tests/test_release_package.py",
+    "test:native": "python3 tests/native/test_save.py && node tests/native/bridge.mjs && python3 tests/native/verify_launcher.py",
+    "test:native:browser": "node tests/native/browser.mjs",
+    "package": "python3 scripts/package-release.py",
+    "test": "npm run build && node tests/e2e.mjs"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.17",
+    "highlight.js": "^11.12.0",
+    "marked": "^18.1.2",
+    "pdfmake": "0.3.11"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "puppeteer-core": "^25.16.0"
+  }
+}

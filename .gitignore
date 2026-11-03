@@ -1,0 +1,21 @@
+node_modules/
+.cache/
+tests/artifacts/
+tests/.tmp/
+tests/fixtures/pic.png
+tests/fixtures/local/pics/
+.DS_Store
+__pycache__/
+*.py[cod]
+*.log
+.env
+.env.*
+!.env.example
+dist/
+# Local investigation history and generated documents are retained on disk.
+docs/session-notes/
+# Per-user native installation data must never be committed.
+native/config.json
+native/python-path
+native/launcher-build.sha256
+native/*.app/

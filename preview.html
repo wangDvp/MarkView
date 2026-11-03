@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Markdown 预览</title>
+    <link rel="stylesheet" href="preview.css" />
+  </head>
+  <body>
+    <div class="mdp-app mdp-page" id="app" data-theme="auto">
+      <header class="mdp-toolbar">
+        <div class="mdp-brand">
+          <span class="mdp-logo" aria-hidden="true">M</span>
+          <div class="mdp-heading">
+            <h1 class="mdp-filename" id="fileName">Markdown 预览</h1>
+            <p class="mdp-meta" id="fileMeta">本地渲染 · 不上传</p>
+          </div>
+        </div>
+        <div class="mdp-actions">
+          <button
+            type="button"
+            class="mdp-icon-btn"
+            id="themeBtn"
+            title="主题：跟随系统"
+            aria-label="切换主题"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+              />
+            </svg>
+          </button>
+          <button type="button" class="mdp-btn" id="reselectBtn">选择文件</button>
+          <button
+            type="button"
+            class="mdp-icon-btn"
+            id="closeBtn"
+            title="关闭预览 (Esc)"
+            aria-label="关闭预览"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="mdp-stage" id="stage" tabindex="0">
+        <section class="mdp-dropzone" id="dropzone">
+          <div class="mdp-dropzone-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              focusable="false"
+            >
+              <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+              <path d="M14 3v6h6M8 13h5M8 17h7" />
+            </svg>
+          </div>
+          <h2>打开 Markdown 文件</h2>
+          <p>
+            拖拽 <strong>.md</strong> / <strong>.markdown</strong> 文件到这里，或点击下方按钮选择文件。
+          </p>
+          <button type="button" class="mdp-btn mdp-btn-primary" id="pickBtn">选择 Markdown 文件</button>
+          <p class="mdp-dropzone-note">
+            所有解析都在本地完成，文件不会上传。可同时选择 Markdown 与相关图片（可选），以便显示相对路径图片。<br />
+            若希望直接打开 <code>file://</code> Markdown 时自动预览，请在扩展详情中开启“允许访问文件网址”。
+          </p>
+          <p class="mdp-shortcut" id="shortcutRow">
+            <span id="shortcutText">快捷键 Ctrl+M</span>
+            <button type="button" class="mdp-link" id="shortcutSettings">自定义 / 检查冲突</button>
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".md,.markdown,text/markdown,image/*"
+            multiple
+            hidden
+          />
+        </section>
+
+        <div class="mdp-doc" id="doc" hidden>
+          <div class="mdp-warning" id="warning" hidden></div>
+          <div class="mdp-doc-body" id="content"></div>
+        </div>
+
+        <div class="mdp-state" id="statePanel" tabindex="-1" hidden></div>
+      </main>
+
+      <div class="mdp-drag-overlay" id="dragOverlay" hidden>
+        <div>松开以预览 Markdown</div>
+      </div>
+      <div class="mdp-toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="lib/markdown-vendor.js"></script>
+    <script src="renderer.js"></script>
+    <script src="document-export.js"></script>
+    <script src="document-editor.js"></script>
+    <script src="preview.js"></script>
+  </body>
+</html>
