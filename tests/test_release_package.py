@@ -54,7 +54,8 @@ class ReleaseTests(unittest.TestCase):
         self.assertEqual([file.read_bytes() for file in outputs], before)
 
     def test_missing_license_or_runtime_asset_refuses_to_publish(self):
-        for name in ("LICENSE", "fonts/NotoSansSC-Regular.otf"):
+        for name in ("LICENSE", "fonts/NotoSansSC-Regular.otf", "mermaid-render.js",
+                     "lib/mermaid-vendor.js", "licenses/mermaid-LICENSE.txt", "licenses/mermaid-vendor-NOTICES.txt"):
             with self.subTest(name=name):
                 file = self.root / name
                 content = file.read_bytes()

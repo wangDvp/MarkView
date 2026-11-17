@@ -22,7 +22,7 @@ for (const entry of manifest.web_accessible_resources || []) {
 const context = { globalThis: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, 'lib/content-styles.js'), 'utf8'), context);
 assert.equal(context.globalThis.MDP_CSS, fs.readFileSync(path.join(root, 'preview.css'), 'utf8'));
-for (const script of ['background.js', 'native-bridge.js', 'native-file.js', 'content.js', 'preview.js', 'document-editor.js', 'document-export.js', 'pdf-export.js', 'pdf-content.js']) {
+for (const script of ['background.js', 'native-bridge.js', 'native-file.js', 'content.js', 'preview.js', 'renderer.js', 'document-editor.js', 'document-export.js', 'pdf-export.js', 'pdf-content.js', 'mermaid-render.js', 'scripts/build-mermaid.mjs', 'tests/mermaid.mjs']) {
   const result = spawnSync(process.execPath, ['--check', path.join(root, script)], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
 }

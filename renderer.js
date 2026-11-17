@@ -9,6 +9,69 @@
   }
 
   const { marked, DOMPurify, hljs } = vendor;
+  let mermaidModule;
+  const rendering = new WeakMap();
+
+  function loadMermaid() {
+    if (!mermaidModule) {
+      mermaidModule = import(chrome.runtime.getURL('mermaid-render.js')).catch((error) => {
+        mermaidModule = null;
+        throw error;
+      });
+    }
+    return mermaidModule;
+  }
+
+  async function renderDiagram(wrapper, pre, source) {
+    wrapper.dataset.mdpMermaid = '';
+    const status = document.createElement('div');
+    status.className = 'mdp-diagram-status';
+    status.setAttribute('role', 'status');
+    status.textContent = '正在绘制 Mermaid 图表…';
+    wrapper.append(status);
+    pre.hidden = true;
+    try {
+      const engine = await loadMermaid();
+      if (!wrapper.isConnected) return;
+      const result = await engine.diagram(source, DOMPurify);
+      if (!wrapper.isConnected) return;
+      const view = document.createElement('div');
+      view.className = 'mdp-diagram-view';
+      engine.mount(view, result, DOMPurify);
+      status.replaceWith(view);
+      wrapper.dataset.mdpDiagramState = 'ready';
+    } catch {
+      pre.hidden = false;
+      status.textContent = 'Mermaid 图表无法绘制，请检查语法、图表大小或外部资源引用；已保留源码。';
+      wrapper.dataset.mdpDiagramState = 'error';
+    }
+  }
+
+  async function prepareExport(root) {
+    let missingDiagrams = 0;
+    for (const wrapper of root.querySelectorAll('[data-mdp-mermaid]')) {
+      const pre = wrapper.querySelector('pre');
+      const source = pre?.querySelector('code')?.textContent || '';
+      try {
+        const engine = await loadMermaid();
+        const result = await engine.diagram(source, DOMPurify);
+        const image = document.createElement('img');
+        image.src = await engine.png(result);
+        image.alt = 'Mermaid 图表';
+        image.width = Math.max(1, Math.round(result.width));
+        image.height = Math.max(1, Math.round(result.height));
+        image.dataset.mdpDiagram = '';
+        const paragraph = document.createElement('p');
+        paragraph.append(image);
+        wrapper.replaceWith(paragraph);
+      } catch {
+        missingDiagrams++;
+        wrapper.querySelectorAll('.mdp-diagram-status, .mdp-diagram-view').forEach((node) => node.remove());
+        if (pre) pre.hidden = false;
+      }
+    }
+    return { missingDiagrams };
+  }
 
   const MAX_FILE_BYTES = 5 * 1024 * 1024;
   const MAX_MARKDOWN_CHARS = 5 * 1024 * 1024;
@@ -386,6 +449,12 @@
     head.append(label, button);
     pre.replaceWith(wrapper);
     wrapper.append(head, pre);
+    if (language === 'mermaid') {
+      label.textContent = 'Mermaid';
+      const pending = renderDiagram(wrapper, pre, raw);
+      const jobs = rendering.get(wrapper.closest('.mdp-markdown'));
+      if (jobs) jobs.push(pending);
+    }
   }
 
   async function copyText(text) {
@@ -460,6 +529,7 @@
     article.className = 'mdp-markdown';
     article.appendChild(fragment);
     container.replaceChildren(article);
+    rendering.set(article, []);
     enhance(article, options);
     return article;
   }
@@ -470,6 +540,8 @@
     decodeBuffer,
     readFile,
     renderInto,
+    whenReady: (article) => Promise.all(rendering.get(article) || []),
+    prepareExport,
     isMarkdownFile,
     formatBytes,
     normalizeTheme,

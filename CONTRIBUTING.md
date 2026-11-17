@@ -26,6 +26,7 @@ npm run test:native    # macOS：真实文件 IO/安装器，以及 worker API �
 npm run build                  # 重建本地 JS 依赖与注入样式
 node scripts/sync-styles.mjs    # 只更新 preview.css 对应的注入样式
 node scripts/build-pdf.mjs      # 只重建 PDF 引擎与第三方声明
+node scripts/build-mermaid.mjs  # 只重建 Mermaid 与依赖许可声明
 ```
 
 浏览器验证按需执行：
@@ -35,6 +36,7 @@ node scripts/build-pdf.mjs      # 只重建 PDF 引擎与第三方声明
 npx @puppeteer/browsers install chrome@stable --path .cache/browsers
 npm test                       # 构建并运行原有浏览器回归
 npm run test:native:browser     # macOS：agent-browser 隔离会话验证实际本地保存
+node tests/mermaid.mjs          # agent-browser 隔离会话：图表预览、编辑与导出
 ```
 
 真实 native 浏览器测试动态读取扩展 ID，在自有临时 Chrome 配置中注册助手并写入测试 Markdown，结束时关闭测试会话并清理自有数据。它不接管用户日常 Chrome。测试产物、浏览器缓存和本地会话记录不会进入公开发布包。

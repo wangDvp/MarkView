@@ -111,6 +111,7 @@
     // Freeze the rendered document so typing during export cannot mix revisions.
     const root = article.cloneNode(true);
     root.querySelectorAll('.mdp-code-head, .mdp-task-box').forEach((node) => node.remove());
+    const { missingDiagrams } = await globalThis.MDPReview.prepareExport(root);
     const files = [];
     const relations = [];
     const imageRuns = new Map();
@@ -144,7 +145,10 @@
           const id = imageRuns.size + 1;
           files.push([`word/media/image${id}.png`, new Uint8Array(await png.arrayBuffer())]);
           const rid = relationship('image', `media/image${id}.png`);
-          const width = Math.min(canvas.width, 600) * 9525;
+          const displayScale = image.hasAttribute('data-mdp-diagram')
+            ? Math.min(1, image.width / canvas.width, 600 / canvas.width, 900 / canvas.height)
+            : Math.min(1, 600 / canvas.width);
+          const width = Math.round(canvas.width * displayScale * 9525);
           const height = Math.round(width * canvas.height / canvas.width);
           imageRuns.set(image, `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${width}" cy="${height}"/><wp:docPr id="${id}" name="Image ${id}" descr="${xml(image.alt || '')}"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${id}" name="Image ${id}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${width}" cy="${height}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`);
         } finally { bitmap.close(); }
@@ -259,17 +263,18 @@
       ['word/styles.xml', `${XML}<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Microsoft YaHei"/><w:sz w:val="22"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>${[1, 2, 3, 4, 5, 6].map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:pPr><w:keepNext/><w:spacing w:before="280" w:after="160"/><w:outlineLvl w:val="${level - 1}"/></w:pPr><w:rPr><w:b/><w:sz w:val="${[40, 32, 28, 26, 24, 22][level - 1]}"/></w:rPr></w:style>`).join('')}</w:styles>`],
     );
     download(zip(files), filename(name, 'docx'));
-    return { missingImages };
+    return { missingImages, missingDiagrams };
   }
 
   async function pdf({ article, name, options = {} }) {
     // Freeze before loading the engine/fonts so edits cannot mix export revisions.
     const root = article.cloneNode(true);
     root.querySelectorAll('.mdp-code-head, .mdp-task-box').forEach((node) => node.remove());
+    const { missingDiagrams } = await globalThis.MDPReview.prepareExport(root);
     const { generate } = await import(chrome.runtime.getURL('pdf-export.js'));
     const result = await generate(root, name, options, readImage);
     download(result.blob, filename(name, 'pdf'));
-    return { missingImages: result.missingImages };
+    return { missingImages: result.missingImages, missingDiagrams };
   }
 
   globalThis.MDPExport = Object.freeze({ word, pdf, download, filename });

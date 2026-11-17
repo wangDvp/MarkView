@@ -54,7 +54,8 @@ async function imageNodes(root, readImage) {
         const data = canvas.toDataURL('image/png');
         totalBytes += data.length * 0.75;
         if (totalBytes > 20 * 1024 * 1024) throw new Error('image size');
-        const ratio = Math.min(1, CONTENT_WIDTH / (canvas.width * 0.75), 600 / (canvas.height * 0.75));
+        const naturalScale = image.hasAttribute('data-mdp-diagram') ? image.width / canvas.width : 1;
+        const ratio = Math.min(1, naturalScale, CONTENT_WIDTH / (canvas.width * 0.75), 600 / (canvas.height * 0.75));
         images.set(image, { image: data, width: canvas.width * 0.75 * ratio, height: canvas.height * 0.75 * ratio, margin: [0, 0, 0, 10] });
       } finally { bitmap.close(); }
     } catch {

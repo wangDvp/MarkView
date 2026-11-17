@@ -15,25 +15,26 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_FILES = (
     "manifest.json", "background.js", "native-bridge.js", "native-file.js", "content.js",
-    "renderer.js", "document-editor.js", "document-export.js", "pdf-export.js", "pdf-content.js",
+    "renderer.js", "document-editor.js", "document-export.js", "pdf-export.js", "pdf-content.js", "mermaid-render.js",
     "preview.html", "preview.js", "preview.css", "README.md", "LICENSE", "PRIVACY.md",
     "CONTRIBUTING.md", "docs/RELEASING.md", "THIRD-PARTY-NOTICES.md",
     "native/install.py", "native/save_host.py", "native/launcher.c", "native/README.md",
-    "lib/markdown-vendor.js", "lib/content-styles.js", "lib/pdf-vendor.js",
+    "lib/markdown-vendor.js", "lib/content-styles.js", "lib/pdf-vendor.js", "lib/mermaid-vendor.js",
     "fonts/NotoSansSC-Regular.otf", "fonts/NotoSansSC-Bold.otf",
     "icons/icon16.png", "icons/icon32.png", "icons/icon48.png", "icons/icon128.png",
     "icons/icon512.png", "icons/icon.svg",
     "licenses/marked-LICENSE.txt", "licenses/DOMPurify-LICENSE.txt", "licenses/highlight.js-LICENSE.txt",
     "licenses/pdfmake-LICENSE.txt", "licenses/svg-to-pdfkit-LICENSE.txt", "licenses/pdf-vendor-NOTICES.txt",
     "licenses/NotoSansSC-LICENSE.txt",
+    "licenses/mermaid-LICENSE.txt", "licenses/mermaid-vendor-NOTICES.txt",
 )
 DEVELOPMENT_FILES = (
-    ".gitignore", "package.json", "package-lock.json", "src/vendor.js", "src/pdf-vendor.js",
-    "scripts/build.mjs", "scripts/build-pdf.mjs", "scripts/sync-styles.mjs", "scripts/icons.mjs",
+    ".gitignore", "package.json", "package-lock.json", "src/vendor.js", "src/pdf-vendor.js", "src/mermaid-vendor.js",
+    "scripts/build.mjs", "scripts/build-pdf.mjs", "scripts/build-mermaid.mjs", "scripts/sync-styles.mjs", "scripts/icons.mjs",
     "scripts/fetch-pdf-fonts.mjs", "scripts/package-release.py",
-    "tests/e2e.mjs", "tests/check-static.mjs", "tests/test_release_package.py",
+    "tests/e2e.mjs", "tests/check-static.mjs", "tests/test_release_package.py", "tests/mermaid.mjs",
     "tests/native/test_save.py", "tests/native/bridge.mjs", "tests/native/verify_launcher.py", "tests/native/browser.mjs",
-    "tests/fixtures/sample.md", "tests/fixtures/page.html", "tests/fixtures/local/README.md",
+    "tests/fixtures/sample.md", "tests/fixtures/page.html", "tests/fixtures/local/README.md", "tests/fixtures/mermaid.md",
 )
 
 

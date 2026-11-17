@@ -9,6 +9,7 @@ const libDir = path.join(root, 'lib');
 await mkdir(libDir, { recursive: true });
 
 await import('./build-pdf.mjs');
+await import('./build-mermaid.mjs');
 
 await build({
   entryPoints: [path.join(root, 'src/vendor.js')],

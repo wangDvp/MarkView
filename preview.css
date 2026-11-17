@@ -751,6 +751,23 @@ body {
   tab-size: 4;
 }
 
+/* Mermaid uses a light diagram canvas in both document themes. */
+.mdp-diagram-view {
+  overflow-x: auto;
+  padding: 16px;
+  background: #fff;
+}
+
+.mdp-diagram-status {
+  padding: 12px 16px;
+  color: var(--mdp-muted);
+  font-size: 13px;
+}
+
+.mdp-code pre[hidden] {
+  display: none;
+}
+
 /* highlight.js tokens, theme-aware */
 .hljs-comment,
 .hljs-quote {

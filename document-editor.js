@@ -268,10 +268,10 @@
         const article = content.querySelector('.mdp-markdown');
         if (type === 'word') {
           const result = await globalThis.MDPExport.word(article, current.name, current.options);
-          notify(result.missingImages ? 'Word 已发起下载；无法读取的图片已保留替代说明。' : 'Word 已发起下载。');
+          notify(`Word 已发起下载。${result.missingImages ? '无法读取的图片已保留替代说明。' : ''}${result.missingDiagrams ? '无法绘制的 Mermaid 图表已保留源码。' : ''}`);
         } else {
           const result = await globalThis.MDPExport.pdf({ article, name: current.name, options: current.options });
-          notify(result.missingImages ? 'PDF 已发起下载；无法读取的图片已保留替代说明。' : 'PDF 已发起下载。');
+          notify(`PDF 已发起下载。${result.missingImages ? '无法读取的图片已保留替代说明。' : ''}${result.missingDiagrams ? '无法绘制的 Mermaid 图表已保留源码。' : ''}`);
         }
       } catch {
         notify('导出失败，请重试；编辑内容仍保留。');
